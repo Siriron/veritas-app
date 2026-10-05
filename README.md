@@ -1,14 +1,6 @@
 <div align="center">
 
-<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80" fill="none">
-  <circle cx="40" cy="40" r="40" fill="#0d0f1a"/>
-  <polygon points="40,14 54,36 66,36 56,50 60,68 40,57 20,68 24,50 14,36 26,36" fill="none" stroke="#7c3aed" stroke-width="2.5" stroke-linejoin="round"/>
-  <circle cx="40" cy="40" r="7" fill="#7c3aed"/>
-  <line x1="40" y1="14" x2="40" y2="33" stroke="#a78bfa" stroke-width="1.5"/>
-  <line x1="40" y1="47" x2="40" y2="68" stroke="#a78bfa" stroke-width="1.5"/>
-  <line x1="14" y1="36" x2="33" y2="38" stroke="#a78bfa" stroke-width="1.5"/>
-  <line x1="47" y1="42" x2="66" y2="44" stroke="#a78bfa" stroke-width="1.5"/>
-</svg>
+<img src="./public/favicon.svg" width="88" alt="Veritas logo" />
 
 # Veritas
 
@@ -98,36 +90,15 @@ Creator opens dispute
 ## Project Structure
 
 ```
-veritas-app/
-├── contracts/
-│   ├── VeritasDisputes.py          # Intelligent Contract (GenLayer Python)
-│   └── test/
-│       └── test_veritas_direct.py  # Direct-mode pytest suite
-├── src/
-│   ├── genlayer/
-│   │   ├── client.ts               # VeritasContract class — all reads/writes
-│   │   ├── config.ts               # Network config + CONTRACT_ADDRESS
-│   │   ├── fees.ts                 # Fee estimation helpers
-│   │   ├── types.ts                # TypeScript types (Dispute, Claim, TxReceipt)
-│   │   └── useWallet.ts            # Wallet hook (connect, reconnect, chain switch)
-│   ├── components/
-│   │   ├── Navbar.tsx              # Sticky nav with wallet button
-│   │   ├── StatusBadge.tsx         # Dispute/claim status badges
-│   │   └── WalletButton.tsx        # Connect/disconnect/switch-network
-│   ├── pages/
-│   │   ├── HomePage.tsx            # Landing + dispute feed
-│   │   ├── CreateDisputePage.tsx   # Create dispute form
-│   │   ├── DisputeDetailPage.tsx   # Full lifecycle: file, challenge, eval, finalize, withdraw
-│   │   └── ProfilePage.tsx         # Wallet-scoped activity
-│   ├── utils/
-│   │   └── format.ts               # shortAddr, formatGen, formatTs, formatCountdown
-│   ├── App.tsx                     # BrowserRouter + Routes
-│   └── index.css                   # Design tokens (electric violet, dark terminal theme)
-├── docs/
-│   ├── architecture.md
-│   ├── contract.md
-│   └── frontend.md
-└── README.md
+contracts/VeritasDisputes.py        Intelligent Contract (GenLayer Python)
+contracts/test/                     Direct-mode test file (see Testing status)
+src/genlayer/                       client, config, fees, types, wallet hook
+src/components/                     Navbar, StatusBadge, WalletButton
+src/pages/                          Home, CreateDispute, DisputeDetail, Profile
+src/utils/format.ts                 address, GEN, timestamp, countdown formatters
+docs/                               architecture.md, contract.md, frontend.md
+public/favicon.svg                  logo
+LICENSE                             MIT
 ```
 
 ---
@@ -136,7 +107,7 @@ veritas-app/
 
 ### Prerequisites
 
-- [Bun](https://bun.sh) ≥ 1.0
+- [Node.js](https://nodejs.org) ≥ 20
 - [MetaMask](https://metamask.io) browser extension
 - GenLayer StudioNet added to MetaMask (see below)
 
@@ -156,17 +127,17 @@ Get free testnet GEN from [studio.genlayer.com](https://studio.genlayer.com) →
 
 ```bash
 # Install dependencies
-bun install
+npm install
 
 # Start dev server
-bun run dev
+npm run dev
 # → http://localhost:5173
 ```
 
 ### Build for Production
 
 ```bash
-bun run build
+npm run build
 ```
 
 ---
@@ -201,21 +172,13 @@ All public methods on `VeritasDisputes`:
 
 ---
 
-## Running Tests
+## Testing status
 
-The test suite runs the real contract in **direct mode** (no network, instant feedback):
+`genvm-lint check contracts/VeritasDisputes.py` passes (3 checks, 14 methods).
 
-```bash
-# Install test dependency
-pip install "genlayer-test==0.29.2"
+`contracts/test/test_veritas_direct.py` does **not** currently execute. It imports `DirectTestClient` from `genlayer.test`, which `genlayer-test==0.29.2` does not provide, so pytest skips the whole module (`1 skipped`). The suite needs to be ported to the `direct_vm` / `direct_deploy` fixtures before it can be cited as evidence of any behaviour. Until then, nothing in this repository proves the contract's lifecycle by test.
 
-# Run all tests
-pytest contracts/test/test_veritas_direct.py -q -p no:cacheprovider
-```
-
-Tests cover: dispute creation, claim filing, single-filer refund, cancel, timeout refund, challenge evidence, and all invalid-input rejection paths.
-
-> **Note:** Direct-mode tests do not exercise the nondeterministic evaluation step (LLM + web fetches) — those require a live GenLayer node. The tests cover every deterministic branch, every fund path, and every `_require` guard.
+Live behaviour on StudioNet has been exercised by hand through the app only; that is not repository evidence.
 
 ---
 
@@ -234,5 +197,5 @@ MIT — see [LICENSE](LICENSE)
 ---
 
 <div align="center">
-Built with <a href="https://studio.arc.io">Arc Studio</a> · Powered by <a href="https://genlayer.com">GenLayer</a>
+Built on <a href="https://genlayer.com">GenLayer</a>
 </div>
