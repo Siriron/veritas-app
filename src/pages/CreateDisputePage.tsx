@@ -41,7 +41,7 @@ export default function CreateDisputePage() {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const isDemo = CONTRACT_ADDRESS === "0x0000000000000000000000000000000000000000";
+  const isDemo = false; // contract is deployed
 
   function autofill() {
     setTitle(SAMPLE.title);

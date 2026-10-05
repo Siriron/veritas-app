@@ -33,7 +33,7 @@ const SAMPLE_CLAIMS = {
 const SAMPLE_CHALLENGE_URL =
   "https://archive.org/wayback/available?url=en.wikipedia.org/wiki/Blockchain&timestamp=20100101";
 
-const isDemo = CONTRACT_ADDRESS === "0x0000000000000000000000000000000000000000";
+const isDemo = false; // contract is deployed
 
 // ── Helper ───────────────────────────────────────────────────────────────────
 

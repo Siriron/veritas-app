@@ -7,7 +7,7 @@ import { shortAddr, formatGen, formatTs } from "@/utils/format";
 import type { Dispute, Claim } from "@/genlayer/types";
 import { Wallet, Info, ExternalLink } from "lucide-react";
 
-const isDemo = CONTRACT_ADDRESS === "0x0000000000000000000000000000000000000000";
+const isDemo = false; // contract is deployed
 
 interface ActivityItem {
   dispute: Dispute;

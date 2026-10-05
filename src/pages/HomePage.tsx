@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import { StatusBadge } from "@/components/StatusBadge";
 import { shortAddr, formatGen, formatCountdown } from "@/utils/format";
-import { CONTRACT_ADDRESS } from "@/genlayer/config";
 import type { Dispute } from "@/genlayer/types";
 import { ArrowRight, Zap, Eye, Award } from "lucide-react";
 
@@ -59,7 +58,7 @@ const LIFECYCLE_STEPS = [
 ];
 
 export default function HomePage() {
-  const isDemo = CONTRACT_ADDRESS === "0x0000000000000000000000000000000000000000";
+  const isDemo = false; // contract is deployed
   const disputes: Dispute[] = isDemo ? DEMO : [];
 
   return (
