@@ -270,6 +270,40 @@ export class VeritasContract {
     return asRecord(await this.read("get_contract_info"));
   }
 
+  /** Returns the total number of disputes created so far. */
+  async getDisputeCount(): Promise<number> {
+    const info = await this.getContractInfo();
+    const seq = info.next_dispute_seq ?? info.dispute_count ?? info.total_disputes;
+    if (seq !== undefined) return Number(seq);
+    // Fallback: probe sequentially until a dispute is not found
+    let count = 0;
+    for (let i = 0; i < 50; i++) {
+      try {
+        const d = asDispute(await this.read("get_dispute", [`dispute:${i}`]));
+        if (!d.dispute_id) break;
+        count = i + 1;
+      } catch {
+        break;
+      }
+    }
+    return count;
+  }
+
+  /** Fetches all disputes in reverse-creation order (newest first). */
+  async getAllDisputes(): Promise<Dispute[]> {
+    const count = await this.getDisputeCount();
+    const results: Dispute[] = [];
+    for (let i = count - 1; i >= 0; i--) {
+      try {
+        const d = await this.getDispute(`dispute:${i}`);
+        if (d.dispute_id) results.push(d);
+      } catch {
+        // skip missing entries
+      }
+    }
+    return results;
+  }
+
   // ── Writes ───────────────────────────────────────────────────────────────
 
   createDispute(
