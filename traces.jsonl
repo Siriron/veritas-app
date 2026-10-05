@@ -14,3 +14,5 @@
 {"type":"event","event":{"event":{"kind":"rpc","id":"8f19adf9-2","timestamp":1791167912922,"method":"eth_accounts","params":[],"chainId":0,"result":[],"duration":58},"enrichmentStatus":"none"}}
 {"type":"event","event":{"event":{"kind":"rpc","id":"8f19adf9-5","timestamp":1791167912963,"method":"eth_accounts","params":[],"chainId":1,"result":[],"duration":27},"enrichmentStatus":"none"}}
 {"type":"event","event":{"event":{"kind":"rpc","id":"8f19adf9-6","timestamp":1791167912923,"method":"eth_accounts","params":[],"chainId":1,"result":[],"duration":67},"enrichmentStatus":"none"}}
+{"type":"event","event":{"event":{"kind":"rpc","id":"74cb1192-1","timestamp":1791168561472,"method":"eth_accounts","params":[],"chainId":0,"result":[],"duration":41},"enrichmentStatus":"none"}}
+{"type":"event","event":{"event":{"kind":"rpc","id":"74cb1192-3","timestamp":1791168561473,"method":"eth_accounts","params":[],"chainId":1,"result":[],"duration":47},"enrichmentStatus":"none"}}

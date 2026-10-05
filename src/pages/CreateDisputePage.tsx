@@ -6,12 +6,14 @@ import { CONTRACT_ADDRESS } from "@/genlayer/config";
 import { Info, Loader2 } from "lucide-react";
 
 const FILING_WINDOWS = [
+  { label: "15 minutes (testing)", seconds: 900 },
   { label: "24 hours", seconds: 86400 },
   { label: "48 hours (default)", seconds: 172800 },
   { label: "7 days", seconds: 604800 },
 ];
 
 const CHALLENGE_WINDOWS = [
+  { label: "2 hours (testing)", seconds: 7200 },
   { label: "6 hours", seconds: 21600 },
   { label: "24 hours (default)", seconds: 86400 },
   { label: "3 days", seconds: 259200 },
@@ -25,8 +27,8 @@ const SAMPLE = {
     "data-availability costs without a trusted setup. Covers the specific mechanism of " +
     "rebuilding the dictionary window on every batch rather than a static, precomputed one.",
   stakeGen: "0.01",
-  filingSeconds: 86400,
-  challengeSeconds: 21600,
+  filingSeconds: 900,
+  challengeSeconds: 7200,
 };
 
 export default function CreateDisputePage() {
@@ -36,8 +38,8 @@ export default function CreateDisputePage() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [stakeGen, setStakeGen] = useState("1");
-  const [filingSeconds, setFilingSeconds] = useState(FILING_WINDOWS[1].seconds);
-  const [challengeSeconds, setChallengeSeconds] = useState(CHALLENGE_WINDOWS[1].seconds);
+  const [filingSeconds, setFilingSeconds] = useState(FILING_WINDOWS[0].seconds);
+  const [challengeSeconds, setChallengeSeconds] = useState(CHALLENGE_WINDOWS[0].seconds);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
