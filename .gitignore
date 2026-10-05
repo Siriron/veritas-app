@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.env
+.env.local
+origin-trace-reference/
+genlayer-reference/
+lib/
+contracts/out/
+contracts/cache/
+contracts/contract-metadata/
+.foundry/

@@ -1,0 +1,12 @@
+{"type":"event","event":{"event":{"kind":"rpc","id":"289e998a-1","timestamp":1791166324778,"method":"eth_accounts","params":[],"chainId":0,"result":[],"duration":225},"enrichmentStatus":"none"}}
+{"type":"event","event":{"event":{"kind":"rpc","id":"289e998a-2","timestamp":1791166324625,"method":"eth_accounts","params":[],"chainId":0,"result":[],"duration":378},"enrichmentStatus":"none"}}
+{"type":"event","event":{"event":{"kind":"rpc","id":"289e998a-5","timestamp":1791166324779,"method":"eth_accounts","params":[],"chainId":1,"result":[],"duration":228},"enrichmentStatus":"none"}}
+{"type":"event","event":{"event":{"kind":"rpc","id":"289e998a-6","timestamp":1791166324632,"method":"eth_accounts","params":[],"chainId":1,"result":[],"duration":375},"enrichmentStatus":"none"}}
+{"type":"event","event":{"event":{"kind":"rpc","id":"5cf9b477-1","timestamp":1791167117629,"method":"eth_accounts","params":[],"chainId":0,"result":[],"duration":34},"enrichmentStatus":"none"}}
+{"type":"event","event":{"event":{"kind":"rpc","id":"5cf9b477-2","timestamp":1791167117558,"method":"eth_accounts","params":[],"chainId":0,"result":[],"duration":106},"enrichmentStatus":"none"}}
+{"type":"event","event":{"event":{"kind":"rpc","id":"5cf9b477-5","timestamp":1791167117630,"method":"eth_accounts","params":[],"chainId":1,"result":[],"duration":48},"enrichmentStatus":"none"}}
+{"type":"event","event":{"event":{"kind":"rpc","id":"5cf9b477-6","timestamp":1791167117559,"method":"eth_accounts","params":[],"chainId":1,"result":[],"duration":119},"enrichmentStatus":"none"}}
+{"type":"event","event":{"event":{"kind":"rpc","id":"235a2487-1","timestamp":1791167443232,"method":"eth_accounts","params":[],"chainId":0,"result":[],"duration":56},"enrichmentStatus":"none"}}
+{"type":"event","event":{"event":{"kind":"rpc","id":"235a2487-2","timestamp":1791167443157,"method":"eth_accounts","params":[],"chainId":0,"result":[],"duration":132},"enrichmentStatus":"none"}}
+{"type":"event","event":{"event":{"kind":"rpc","id":"235a2487-5","timestamp":1791167443233,"method":"eth_accounts","params":[],"chainId":1,"result":[],"duration":62},"enrichmentStatus":"none"}}
+{"type":"event","event":{"event":{"kind":"rpc","id":"235a2487-6","timestamp":1791167443159,"method":"eth_accounts","params":[],"chainId":1,"result":[],"duration":136},"enrichmentStatus":"none"}}
