@@ -49,7 +49,7 @@ Veritas is a full-stack GenLayer dapp consisting of:
                                    └──────────────────┘
 ```
 
-If evaluation is never triggered within `EVALUATION_TIMEOUT_SECONDS` (14 days after filing closes), any claimant may call `claim_dispute_timeout()` to recover their stake.
+If evaluation is never triggered within `EVALUATION_TIMEOUT_SECONDS` (14 days after filing closes), any claimant may call `claim_dispute_timeout()` to recover their stake. The same exit applies to a ranked dispute that is not finalized within `FINALIZE_TIMEOUT_SECONDS` of the challenge window closing.
 
 ---
 

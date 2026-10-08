@@ -69,6 +69,7 @@ MIN_CHALLENGE_WINDOW_SECONDS     = 60 * 60 * 2         # 2 h
 MAX_CHALLENGE_WINDOW_SECONDS     = 60 * 60 * 24 * 14   # 14 days
 
 EVALUATION_TIMEOUT_SECONDS       = 60 * 60 * 24 * 14   # 14 days after filing closes
+FINALIZE_TIMEOUT_SECONDS         = 60 * 60 * 24 * 14   # 14 days after the challenge window closes
 
 TIMESTAMP_TOLERANCE_SECONDS      = 60 * 60 * 24        # 24 h
 
@@ -104,10 +105,19 @@ def _bps_clamp(value: int) -> int:
 
 
 def _coerce_bps(value, default: int = 0) -> int:
-    try:
-        return _bps_clamp(int(round(float(str(value).strip()))))
-    except Exception:
+    """Integer-only parse: never float(), even transiently. "6500.7" -> 6500."""
+    if value is None or isinstance(value, bool):
         return default
+    if isinstance(value, int):
+        return _bps_clamp(value)
+    text = str(value).strip()
+    negative = text.startswith("-")
+    if negative or text.startswith("+"):
+        text = text[1:]
+    whole = text.split(".")[0].strip()
+    if not whole.isdigit():
+        return default
+    return _bps_clamp(-int(whole) if negative else int(whole))
 
 
 def _coerce_bool(value, default: bool = False) -> bool:
@@ -163,9 +173,13 @@ def _pick(obj: dict, key: str, aliases: tuple):
 
 
 def _now_ts() -> u256:
-    """Consensus-agreed block timestamp. GenVM patches datetime.now() to
-    a network-agreed value; every validator computes it identically."""
-    return u256(int(datetime.datetime.now(datetime.timezone.utc).timestamp()))
+    """Transaction timestamp. GenVM's clock_time_get returns the transaction
+    timestamp in both leader and validator modes, so datetime.now() is the same
+    value on every node. Integer-only arithmetic (no float)."""
+    delta = datetime.datetime.now(datetime.timezone.utc) - datetime.datetime(
+        1970, 1, 1, tzinfo=datetime.timezone.utc
+    )
+    return u256(delta.days * 86400 + delta.seconds)
 
 
 # ======================================================================
@@ -306,17 +320,25 @@ def _fetch_json(url: str) -> tuple:
     return parsed, None
 
 
+_EPOCH = datetime.datetime(1970, 1, 1, tzinfo=datetime.timezone.utc)
+
+
+def _to_unix(dt: datetime.datetime) -> int:
+    delta = dt - _EPOCH
+    return delta.days * 86400 + delta.seconds
+
+
 def _parse_iso8601_to_unix(value: str) -> int:
     text = str(value).strip().replace("Z", "+00:00")
     if re.fullmatch(r"\d{14}", text):
         dt = datetime.datetime.strptime(text, "%Y%m%d%H%M%S").replace(
             tzinfo=datetime.timezone.utc
         )
-        return int(dt.timestamp())
+        return _to_unix(dt)
     dt = datetime.datetime.fromisoformat(text)
     if dt.tzinfo is None:
         dt = dt.replace(tzinfo=datetime.timezone.utc)
-    return int(dt.timestamp())
+    return _to_unix(dt)
 
 
 def _canonical_url(url: str) -> str:
@@ -953,6 +975,8 @@ class VeritasDisputes(gl.Contract):
                  f"{ERROR_EXPECTED} Dispute must be FILING_OPEN to begin evaluation")
         _require(_now_ts() > dispute.filing_deadline_ts,
                  f"{ERROR_EXPECTED} Filing window has not yet closed")
+        _require(_now_ts() <= dispute.evaluation_timeout_ts,
+                 f"{ERROR_EXPECTED} Evaluation timeout expired; claimants may refund via claim_dispute_timeout")
         _require(dispute.claim_count >= u256(2),
                  f"{ERROR_EXPECTED} At least two claims are required")
 
@@ -971,10 +995,11 @@ class VeritasDisputes(gl.Contract):
                 "challenge_evidence":  [],
             })
 
-        # Copy everything the closures need out of storage before run_nondet_unsafe
-        idea_title       = gl.storage.copy_to_memory(dispute.idea_title)
-        idea_description = gl.storage.copy_to_memory(dispute.idea_description)
-        snaps_copy       = gl.storage.copy_to_memory(snapshots)
+        # Plain Python values (str / list of dicts) built in the deterministic body: nothing
+        # storage-backed is captured by the closures. (copy_to_memory is only valid on storage objects.)
+        idea_title       = str(dispute.idea_title)
+        idea_description = str(dispute.idea_description)
+        snaps_copy       = snapshots
 
         def leader_fn() -> dict:
             return _run_evaluation(idea_title, idea_description, snaps_copy)
@@ -1067,6 +1092,8 @@ class VeritasDisputes(gl.Contract):
                  f"{ERROR_EXPECTED} Dispute is not ready to finalize")
         _require(_now_ts() > dispute.challenge_deadline_ts,
                  f"{ERROR_EXPECTED} Challenge window has not yet closed")
+        _require(_now_ts() <= dispute.challenge_deadline_ts + u256(FINALIZE_TIMEOUT_SECONDS),
+                 f"{ERROR_EXPECTED} Finalization window expired; claimants may refund via claim_dispute_timeout")
 
         claim_ids     = self._list_claim_ids(dispute_id, dispute.claim_count)
         final_verdict = dispute.ranking_verdict
@@ -1089,9 +1116,9 @@ class VeritasDisputes(gl.Contract):
                     "challenge_evidence":  ev,
                 })
 
-            idea_title       = gl.storage.copy_to_memory(dispute.idea_title)
-            idea_description = gl.storage.copy_to_memory(dispute.idea_description)
-            snaps_copy       = gl.storage.copy_to_memory(snapshots)
+            idea_title       = str(dispute.idea_title)
+            idea_description = str(dispute.idea_description)
+            snaps_copy       = snapshots
 
             def leader_fn() -> dict:
                 return _run_evaluation(idea_title, idea_description, snaps_copy)
@@ -1222,19 +1249,28 @@ class VeritasDisputes(gl.Contract):
 
     @gl.public.write
     def claim_dispute_timeout(self, dispute_id: str) -> None:
-        """Emergency drain: if evaluation was never triggered (or never
-        finished) within EVALUATION_TIMEOUT_SECONDS after the filing
-        window closed, any claimant may pull their own stake back.
-        Each claimant calls this once for their own claim."""
+        """Bounded exit for every pre-final state. A claimant pulls their own
+        stake back if (a) evaluation was never triggered or never finished within
+        EVALUATION_TIMEOUT_SECONDS after the filing window closed, or (b) the
+        dispute was RANKED but never finalized within FINALIZE_TIMEOUT_SECONDS
+        after the challenge window closed. trigger_evaluation and finalize_dispute
+        both refuse to run once their window has expired, so a refund can never
+        race a payout. Each claimant calls this once for their own claim."""
         dispute = self._get_dispute(dispute_id)
         _require(
-            dispute.status in (STATUS_FILING_OPEN, STATUS_VALIDATING),
+            dispute.status in (STATUS_FILING_OPEN, STATUS_VALIDATING, STATUS_RANKED),
             f"{ERROR_EXPECTED} Timeout refund only available before finalization",
         )
-        _require(
-            _now_ts() > dispute.evaluation_timeout_ts,
-            f"{ERROR_EXPECTED} Evaluation timeout has not yet expired",
-        )
+        if dispute.status == STATUS_RANKED:
+            _require(
+                _now_ts() > dispute.challenge_deadline_ts + u256(FINALIZE_TIMEOUT_SECONDS),
+                f"{ERROR_EXPECTED} Finalization timeout has not yet expired",
+            )
+        else:
+            _require(
+                _now_ts() > dispute.evaluation_timeout_ts,
+                f"{ERROR_EXPECTED} Evaluation timeout has not yet expired",
+            )
 
         claim_ids = self._list_claim_ids(dispute_id, dispute.claim_count)
         caller_hex = gl.message.sender_address.as_hex.lower()

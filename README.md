@@ -91,7 +91,7 @@ Creator opens dispute
 
 ```
 contracts/VeritasDisputes.py        Intelligent Contract (GenLayer Python)
-contracts/test/                     Direct-mode test file (see Testing status)
+tests/                              Direct-mode tests that execute the real contract
 src/genlayer/                       client, config, fees, types, wallet hook
 src/components/                     Navbar, StatusBadge, WalletButton
 src/pages/                          Home, CreateDispute, DisputeDetail, Profile
@@ -158,7 +158,7 @@ All public methods on `VeritasDisputes`:
 | `withdraw` | `claim_id` | 0 | Winner or INCONCLUSIVE claimant pulls payout |
 | `claim_single_filer_refund` | `dispute_id` | 0 | Refund if only one claim was filed |
 | `cancel_dispute` | `dispute_id` | 0 | Creator cancels before any claim is filed |
-| `claim_dispute_timeout` | `dispute_id` | 0 | Emergency refund after evaluation timeout |
+| `claim_dispute_timeout` | `dispute_id` | 0 | Refund after the evaluation timeout, or after the finalization timeout on a ranked dispute |
 
 ### Views
 
@@ -174,11 +174,17 @@ All public methods on `VeritasDisputes`:
 
 ## Testing status
 
-`genvm-lint check contracts/VeritasDisputes.py` passes (3 checks, 14 methods).
+```bash
+pip install "genlayer-test==0.29.2" genvm-linter
+pytest tests -q -p no:cacheprovider      # 58 tests
+genvm-lint check contracts/VeritasDisputes.py
+```
 
-`contracts/test/test_veritas_direct.py` does **not** currently execute. It imports `DirectTestClient` from `genlayer.test`, which `genlayer-test==0.29.2` does not provide, so pytest skips the whole module (`1 skipped`). The suite needs to be ported to the `direct_vm` / `direct_deploy` fixtures before it can be cited as evidence of any behaviour. Until then, nothing in this repository proves the contract's lifecycle by test.
+`tests/test_direct.py` loads `contracts/VeritasDisputes.py` under the real GenVM SDK in direct mode and runs its real `leader_fn` / `validator_fn`. Only the outside world is mocked (web, LLM); `emit_transfer` calls are captured so exact recipients and amounts are asserted. Covered: every state guard and input check, the full file → trigger → challenge → finalize → withdraw lifecycle, the earliest-timestamp winner, near-tie and below-threshold INCONCLUSIVE refunds, a sole eligible claim, the second independent evaluation round that can overturn the first ranking, HTTP 403/404/500 never becoming evidence, digest and repository binding, Hacker News id echo, model-score parsing and clamping, all three timeout exits, and the validator's agreement rules (score side and tolerance, timestamp tolerance, digest, matching external failures, errored or junk leader results, the challenge round). Storage pickling is checked on the main lifecycle.
 
-Live behaviour on StudioNet has been exercised by hand through the app only; that is not repository evidence.
+The SDK bundle is pinned (`GENVM_SDK_VERSION`, default `v0.2.16`). Unpinned, the harness asks GitHub for the latest release, which can be a release candidate with no downloadable bundle.
+
+Not proven by these tests: real LLM behaviour, real network behaviour, real multi-node consensus timing.
 
 ---
 

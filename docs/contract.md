@@ -17,7 +17,8 @@
 | `MIN_CHALLENGE_WINDOW_SECONDS` | 7,200 (2 h) | Minimum challenge window |
 | `MAX_CHALLENGE_WINDOW_SECONDS` | 1,209,600 (14 days) | Maximum challenge window |
 | `DEFAULT_CHALLENGE_WINDOW_SECONDS` | 86,400 (24 h) | Default challenge window |
-| `EVALUATION_TIMEOUT_SECONDS` | 1,209,600 (14 days) | Emergency timeout after filing deadline |
+| `EVALUATION_TIMEOUT_SECONDS` | 1,209,600 (14 days) | Evaluation must be triggered within this time after the filing deadline |
+| `FINALIZE_TIMEOUT_SECONDS` | 1,209,600 (14 days) | A ranked dispute must be finalized within this time after the challenge window closes |
 | `TIMESTAMP_TOLERANCE_SECONDS` | 86,400 (24 h) | Near-tie tolerance |
 | `MATCH_THRESHOLD_BPS` | 6000 | Minimum match score to be eligible to win |
 | `MATCH_SCORE_TOLERANCE_BPS` | 1500 | Validator match-score agreement tolerance |
@@ -114,7 +115,7 @@ When only one claim was filed and the filing window has closed, the sole claiman
 ```python
 def claim_dispute_timeout(dispute_id: str) -> None
 ```
-Emergency refund. If `_now_ts() > evaluation_timeout_ts` and the dispute is still in `FILING_OPEN` or `VALIDATING`, any claimant may call this to recover their individual stake.
+Bounded exit before finalization. A claimant recovers their own stake if the dispute is `FILING_OPEN`/`VALIDATING` past `evaluation_timeout_ts`, or `RANKED` more than `FINALIZE_TIMEOUT_SECONDS` after the challenge window closed. `trigger_evaluation` and `finalize_dispute` refuse to run once their window has expired, so a refund can never race a payout.
 
 ---
 
