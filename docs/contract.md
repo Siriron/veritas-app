@@ -1,7 +1,7 @@
 # Veritas — Contract Reference
 
-**Deployed address:** `0xd4972C7A49D5D3Ca3eB307DA7faA97294fA303ff`  
-**Explorer:** https://explorer-studio.genlayer.com/address/0xd4972C7A49D5D3Ca3eB307DA7faA97294fA303ff  
+**Deployed address:** `0x27b38C74B2066D731Ca98169424730B93F23047C`  
+**Explorer:** https://explorer-studio.genlayer.com/address/0x27b38C74B2066D731Ca98169424730B93F23047C  
 **Source:** [`contracts/VeritasDisputes.py`](../contracts/VeritasDisputes.py)  
 **GenLayer dependency:** `py-genlayer:1jb45aa8ynh2a9c9xn3b7qqh8sm5q93hwfp7jqmwsfhh8jpz09h6`
 

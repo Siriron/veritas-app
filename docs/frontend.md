@@ -125,7 +125,7 @@ All writes call `ensureChain()` before submitting, estimate fees via `estimateWr
 ```ts
 export const STUDIONET_RPC      = "https://studio.genlayer.com/api";
 export const STUDIONET_CHAIN_ID = 61999;
-export const CONTRACT_ADDRESS   = "0xd4972C7A49D5D3Ca3eB307DA7faA97294fA303ff";
+export const CONTRACT_ADDRESS   = "0x27b38C74B2066D731Ca98169424730B93F23047C";
 export const EXPLORER_TX_URL    = (hash: string) => `https://explorer-studio.genlayer.com/tx/${hash}`;
 export const EXPLORER_ADDR_URL  = (addr: string) => `https://explorer-studio.genlayer.com/address/${addr}`;
 ```

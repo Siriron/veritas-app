@@ -9,7 +9,7 @@
 **"Who built it first? Let independent evidence decide."**
 
 [![GenLayer](https://img.shields.io/badge/GenLayer-StudioNet-7c3aed?style=flat-square)](https://studio.genlayer.com)
-[![Contract](https://img.shields.io/badge/Contract-Deployed-22c55e?style=flat-square)](https://explorer-studio.genlayer.com/address/0xd4972C7A49D5D3Ca3eB307DA7faA97294fA303ff)
+[![Contract](https://img.shields.io/badge/Contract-Deployed-22c55e?style=flat-square)](https://explorer-studio.genlayer.com/address/0x27b38C74B2066D731Ca98169424730B93F23047C)
 [![Frontend](https://img.shields.io/badge/Frontend-React%20%2B%20Vite-61dafb?style=flat-square)](https://vitejs.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-strict-3178c6?style=flat-square)](https://www.typescriptlang.org)
 [![License](https://img.shields.io/badge/License-MIT-white?style=flat-square)](LICENSE)
@@ -31,8 +31,8 @@ No self-reported dates. No "first to file" wins. No arbiter. The public timeline
 | | |
 |---|---|
 | **Network** | GenLayer StudioNet (Chain ID `61999`) |
-| **Contract Address** | [`0xd4972C7A49D5D3Ca3eB307DA7faA97294fA303ff`](https://explorer-studio.genlayer.com/address/0xd4972C7A49D5D3Ca3eB307DA7faA97294fA303ff) |
-| **Explorer** | [explorer-studio.genlayer.com/address/0xd4972C7A49D5D3Ca3eB307DA7faA97294fA303ff](https://explorer-studio.genlayer.com/address/0xd4972C7A49D5D3Ca3eB307DA7faA97294fA303ff) |
+| **Contract Address** | [`0x27b38C74B2066D731Ca98169424730B93F23047C`](https://explorer-studio.genlayer.com/address/0x27b38C74B2066D731Ca98169424730B93F23047C) |
+| **Explorer** | [explorer-studio.genlayer.com/address/0x27b38C74B2066D731Ca98169424730B93F23047C](https://explorer-studio.genlayer.com/address/0x27b38C74B2066D731Ca98169424730B93F23047C) |
 | **RPC** | `https://studio.genlayer.com/api` |
 | **Source** | [`contracts/VeritasDisputes.py`](contracts/VeritasDisputes.py) |
 
